@@ -1,0 +1,15 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cc: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y valgrind
+      - run: make CC=${{ matrix.cc }} test
+      - run: make CC=${{ matrix.cc }} asan
+      - run: make CC=${{ matrix.cc }} clean valgrind
+      - run: make CC=${{ matrix.cc }} charging-bench && ./charging-bench 50000
